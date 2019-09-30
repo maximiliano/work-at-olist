@@ -26,7 +26,7 @@ def test_post_call_detail_start():
 
 @pytest.mark.django_db
 def test_post_call_detail_end():
-    """Test simple and correct call start registering"""
+    """Test simple and correct call end registering"""
 
     client = APIClient()
 
@@ -40,6 +40,8 @@ def test_post_call_detail_end():
     client.post('/calls/', call_data, format='json')
     assert CallDetail.objects.count() == 1
 
+
+# Section: Validation Errors =================================================
 
 @pytest.mark.django_db
 def test_post_call_detail_missing_call_id():
