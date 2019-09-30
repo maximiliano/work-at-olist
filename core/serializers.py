@@ -12,6 +12,32 @@ class CallDetailSerializer(serializers.BaseSerializer):
         source = data.get("source")
         destination = data.get("destination")
 
+        # Validate required fields
+        if not call_id:
+            raise serializers.ValidationError({
+                'call_id': 'This field is required.'
+            })
+
+        if not call_type:
+            raise serializers.ValidationError({
+                'type': 'This field is required.'
+            })
+
+        if not timestamp:
+            raise serializers.ValidationError({
+                'timestamp': 'This field is required.'
+            })
+
+        if call_type == "start" and not source:
+            raise serializers.ValidationError({
+                'source': 'This field is required if call type is start.'
+            })
+
+        if call_type == "start" and not destination:
+            raise serializers.ValidationError({
+                'destination': 'This field is required if call type is start.'
+            })
+
         return {
             'call_id': call_id,
             'source': source,

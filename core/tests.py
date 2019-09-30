@@ -39,3 +39,95 @@ def test_post_call_detail_end():
 
     client.post('/calls/', call_data, format='json')
     assert CallDetail.objects.count() == 1
+
+
+@pytest.mark.django_db
+def test_post_call_detail_missing_call_id():
+    client = APIClient()
+
+    call_data = {
+        "id": 1,
+        # "call_id": 11,
+        "type": "start",
+        "timestamp": "2016-02-29T12:00:00Z",
+        "source": "11987654321",
+        "destination": "11123456789"
+    }
+
+    response = client.post('/calls/', call_data, format='json')
+    assert CallDetail.objects.count() == 0
+    assert response.json() == {'call_id': 'This field is required.'}
+
+
+@pytest.mark.django_db
+def test_post_call_detail_missing_type():
+    client = APIClient()
+
+    call_data = {
+        "id": 1,
+        "call_id": 11,
+        # "type": "start",
+        "timestamp": "2016-02-29T12:00:00Z",
+        "source": "11987654321",
+        "destination": "11123456789"
+    }
+
+    response = client.post('/calls/', call_data, format='json')
+    assert CallDetail.objects.count() == 0
+    assert response.json() == {'type': 'This field is required.'}
+
+
+@pytest.mark.django_db
+def test_post_call_detail_missing_timestamp():
+    client = APIClient()
+
+    call_data = {
+        "id": 1,
+        "call_id": 11,
+        "type": "start",
+        # "timestamp": "2016-02-29T12:00:00Z",
+        "source": "11987654321",
+        "destination": "11123456789"
+    }
+
+    response = client.post('/calls/', call_data, format='json')
+    assert CallDetail.objects.count() == 0
+    assert response.json() == {'timestamp': 'This field is required.'}
+
+
+@pytest.mark.django_db
+def test_post_call_detail_missing_source():
+    client = APIClient()
+
+    call_data = {
+        "id": 1,
+        "call_id": 11,
+        "type": "start",
+        "timestamp": "2016-02-29T12:00:00Z",
+        # "source": "11987654321",
+        "destination": "11123456789"
+    }
+
+    response = client.post('/calls/', call_data, format='json')
+    assert CallDetail.objects.count() == 0
+    assert response.json() == {
+        'source': 'This field is required if call type is start.'}
+
+
+@pytest.mark.django_db
+def test_post_call_detail_missing_destination():
+    client = APIClient()
+
+    call_data = {
+        "id": 1,
+        "call_id": 11,
+        "type": "start",
+        "timestamp": "2016-02-29T12:00:00Z",
+        "source": "11987654321",
+        # "destination": "11123456789"
+    }
+
+    response = client.post('/calls/', call_data, format='json')
+    assert CallDetail.objects.count() == 0
+    assert response.json() == {
+        'destination': 'This field is required if call type is start.'}
