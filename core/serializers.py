@@ -38,6 +38,28 @@ class CallDetailSerializer(serializers.BaseSerializer):
                 'destination': 'This field is required if call type is start.'
             })
 
+        # Validate field types
+        if not isinstance(timestamp, str):
+            raise serializers.ValidationError({
+                'timestamp': 'timestamp must be a string'
+            })
+
+        if not isinstance(call_id, int):
+            raise serializers.ValidationError({
+                'call_id': 'call_id must be an integer'
+            })
+
+        if call_type == "start":
+            if not isinstance(source, str):
+                raise serializers.ValidationError({
+                    'source': 'source must be a string'
+                })
+
+            if not isinstance(destination, str):
+                raise serializers.ValidationError({
+                    'destination': 'destination must be a string'
+                })
+
         return {
             'call_id': call_id,
             'source': source,
