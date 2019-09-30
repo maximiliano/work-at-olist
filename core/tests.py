@@ -1,5 +1,6 @@
-import pytest
+from datetime import datetime, timezone
 
+import pytest
 from rest_framework.test import APIClient
 
 from core.models import CallDetail
@@ -23,6 +24,17 @@ def test_post_call_detail_start():
     client.post('/calls/', call_data, format='json')
     assert CallDetail.objects.count() == 1
 
+    call = CallDetail.objects.get(call_id=11)
+    assert call.source == "11987654321"
+    assert call.destination == "11123456789"
+    assert call.duration == None
+    assert call.price == None
+    assert call.reference_period == None
+    assert call.started_at == datetime(2016, 2, 29, 12, 0, 0,
+                                       tzinfo=timezone.utc)
+    assert call.ended_at == None
+    assert call.is_completed == False
+
 
 @pytest.mark.django_db
 def test_post_call_detail_end():
@@ -39,6 +51,117 @@ def test_post_call_detail_end():
 
     client.post('/calls/', call_data, format='json')
     assert CallDetail.objects.count() == 1
+
+    call = CallDetail.objects.get(call_id=11)
+    assert call.source == None
+    assert call.destination == None
+    assert call.duration == None
+    assert call.price == None
+    assert call.reference_period == "02/2016"
+    assert call.started_at == None
+    assert call.ended_at == datetime(2016, 2, 29, 12, 0, 0,
+                                     tzinfo=timezone.utc)
+    assert call.is_completed == False
+
+
+@pytest.mark.django_db
+def test_post_call_end_after_start():
+    """Test POST call end when the start was already registered"""
+
+    client = APIClient()
+
+    # Create a previous CallDetail with Record Call Start info already present
+    CallDetail.objects.create(
+        call_id=123, source="11987654321", destination="1187654321",
+        started_at=datetime(2019, 9, 30, 8, 30, 15))
+
+    old_call = CallDetail.objects.get(call_id=123)
+
+    # Test existing call records
+    assert CallDetail.objects.count() == 1
+    assert old_call.source == "11987654321"
+    assert old_call.destination == "1187654321"
+    assert old_call.duration == None
+    assert old_call.price == None
+    assert old_call.reference_period == None
+    assert old_call.started_at == datetime(2019, 9, 30, 8, 30, 15,
+                                           tzinfo=timezone.utc)
+    assert old_call.ended_at == None
+    assert old_call.is_completed == False
+
+    # Register and test new call records, completing the CallDetail model info
+    call_data = {
+        "id": 1,
+        "call_id": 123,
+        "type": "end",
+        "timestamp": "2019-09-30T08:40:00Z"
+    }
+
+    client.post('/calls/', call_data, format='json')
+    assert CallDetail.objects.count() == 1
+
+    call = CallDetail.objects.get(call_id=123)
+    assert call.source == "11987654321"
+    assert call.destination == "1187654321"
+    assert call.duration == 585
+    # assert call.price == None
+    assert call.reference_period == "09/2019"
+    assert call.started_at == datetime(2019, 9, 30, 8, 30, 15,
+                                       tzinfo=timezone.utc)
+    assert call.ended_at == datetime(2019, 9, 30, 8, 40, 0,
+                                     tzinfo=timezone.utc)
+    assert call.is_completed == True
+
+
+@pytest.mark.django_db
+def test_post_call_start_after_end():
+    """Test POST call start when the end was already registered"""
+
+    client = APIClient()
+
+    # Create a previous CallDetail with Record Call End info already present
+    CallDetail.objects.create(
+        call_id=123, ended_at=datetime(2019, 9, 30, 8, 40, 0),
+        reference_period="09/2019")
+
+    old_call = CallDetail.objects.get(call_id=123)
+
+    # Test existing call records
+    assert CallDetail.objects.count() == 1
+    assert old_call.source == None
+    assert old_call.destination == None
+    assert old_call.duration == None
+    assert old_call.price == None
+    assert old_call.reference_period == "09/2019"
+    assert old_call.started_at == None
+    assert old_call.ended_at == datetime(2019, 9, 30, 8, 40, 0,
+                                         tzinfo=timezone.utc)
+    assert old_call.is_completed == False
+
+    # Register and test new call records, completing the CallDetail model info
+    call_data = {
+        "id": 1,
+        "call_id": 123,
+        "type": "start",
+        "timestamp": "2019-09-30T08:30:15Z",
+        "source": "11987654321",
+        "destination": "1187654321"
+    }
+
+    client.post('/calls/', call_data, format='json')
+    assert CallDetail.objects.count() == 1
+
+    call = CallDetail.objects.get(call_id=123)
+    assert call.source == "11987654321"
+    assert call.destination == "1187654321"
+    assert call.duration == 585
+    # assert call.price == None
+    assert call.reference_period == "09/2019"
+    assert call.started_at == datetime(2019, 9, 30, 8, 30, 15,
+                                       tzinfo=timezone.utc)
+    assert call.ended_at == datetime(2019, 9, 30, 8, 40, 0,
+                                     tzinfo=timezone.utc)
+    assert call.is_completed == True
 
 
 # Section: Validation Errors =================================================

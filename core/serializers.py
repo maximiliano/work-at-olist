@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 import re
 
 from rest_framework import serializers
@@ -70,6 +70,7 @@ class CallDetailSerializer(serializers.BaseSerializer):
 
         try:
             date = datetime.strptime(timestamp, "%Y-%m-%dT%H:%M:%SZ")
+            date = date.replace(tzinfo=timezone.utc)
         except ValueError:
             raise serializers.ValidationError({
                 'timestamp':
@@ -89,20 +90,49 @@ class CallDetailSerializer(serializers.BaseSerializer):
                         'destination must be a string of 10 or 11 digits'
                 })
 
-        return {
+        validated_data = {
             'call_id': call_id,
-            'source': source,
-            'destination': destination,
-            # 'duration': duration,
-            # 'price': price,
-            # 'reference_period': reference_period,
-            'started_at': date,
-            # 'ended_at': ended_at,
-            # 'is_completed': is_completed,
         }
+
+        if call_type == "start":
+            validated_data['source'] = source
+            validated_data['destination'] = destination
+            validated_data['started_at'] = date
+        elif call_type == "end":
+            validated_data['ended_at'] = date
+            validated_data['reference_period'] = date.strftime("%m/%Y")
+
+        return validated_data
 
     def to_representation(self, obj):
         return {}
 
     def create(self, validated_data):
         return CallDetail.objects.create(**validated_data)
+
+    def update(self, instance, validated_data):
+        if self.initial_data["type"] == "start":
+            instance.source = validated_data['source']
+            instance.destination = validated_data['destination']
+            instance.started_at = validated_data['started_at']
+
+            # If instance already saved the "end" portion of the call,
+            # mark it as complete and calculate duration
+            if (instance.ended_at):
+                instance.is_completed = True
+                instance.duration = (
+                    instance.ended_at - instance.started_at).seconds
+
+        elif self.initial_data["type"] == "end":
+            instance.ended_at = validated_data['ended_at']
+            instance.reference_period = validated_data['reference_period']
+
+            # If instance already saved the "start" portion of the call,
+            # mark it as complete and calculate duration
+            if (instance.started_at):
+                instance.is_completed = True
+                instance.duration = (
+                    instance.ended_at - instance.started_at).seconds
+
+        instance.save()
+        return instance
