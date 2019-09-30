@@ -1,4 +1,5 @@
 from datetime import datetime
+import re
 
 from rest_framework import serializers
 from core.models import CallDetail
@@ -60,6 +61,34 @@ class CallDetailSerializer(serializers.BaseSerializer):
                     'destination': 'destination must be a string'
                 })
 
+        # Validate field formats
+        if call_type not in ["start", "end"]:
+            raise serializers.ValidationError({
+                'type':
+                    'type must be a string with value "start" or "end".'
+            })
+
+        try:
+            date = datetime.strptime(timestamp, "%Y-%m-%dT%H:%M:%SZ")
+        except ValueError:
+            raise serializers.ValidationError({
+                'timestamp':
+                    'timestamp must be in the format: "YYYY-MM-DDThh:mm:ssZ"'
+            })
+
+        if call_type == "start":
+            if not re.match("^\d{10}$|^\d{11}$", source):
+                raise serializers.ValidationError({
+                    'source':
+                        'source must be a string of 10 or 11 digits'
+                })
+
+            if not re.match("^\d{10}$|^\d{11}$", destination):
+                raise serializers.ValidationError({
+                    'destination':
+                        'destination must be a string of 10 or 11 digits'
+                })
+
         return {
             'call_id': call_id,
             'source': source,
@@ -67,7 +96,7 @@ class CallDetailSerializer(serializers.BaseSerializer):
             # 'duration': duration,
             # 'price': price,
             # 'reference_period': reference_period,
-            'started_at': datetime.strptime(timestamp, "%Y-%m-%dT%H:%M:%SZ"),
+            'started_at': date,
             # 'ended_at': ended_at,
             # 'is_completed': is_completed,
         }

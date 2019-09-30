@@ -203,3 +203,111 @@ def test_post_call_detail_wrong_destination_type():
     response = client.post('/calls/', call_data, format='json')
     assert CallDetail.objects.count() == 0
     assert response.json() == {'destination': 'destination must be a string'}
+
+
+@pytest.mark.django_db
+def test_post_call_detail_wrong_type_format():
+    client = APIClient()
+
+    call_data = {
+        "id": 1,
+        "call_id": 11,
+        "type": "something",
+        "timestamp": "2016-02-29T12:00:00Z",
+        "source": "11987654321",
+        "destination": "11123456789"
+    }
+
+    response = client.post('/calls/', call_data, format='json')
+    assert CallDetail.objects.count() == 0
+    assert response.json() == {
+        'type': 'type must be a string with value "start" or "end".'}
+
+
+@pytest.mark.django_db
+def test_post_call_detail_wrong_timestamp_format():
+    client = APIClient()
+
+    call_data = {
+        "id": 1,
+        "call_id": 11,
+        "type": "start",
+        "timestamp": "2016/02/29 12:00:00",
+        "source": "11987654321",
+        "destination": "11123456789"
+    }
+
+    response = client.post('/calls/', call_data, format='json')
+    assert CallDetail.objects.count() == 0
+    assert response.json() == {
+        'timestamp': 'timestamp must be in the format: "YYYY-MM-DDThh:mm:ssZ"'}
+
+
+@pytest.mark.django_db
+def test_post_call_detail_wrong_source_format():
+    client = APIClient()
+
+    call_data = {
+        "id": 1,
+        "call_id": 11,
+        "type": "start",
+        "timestamp": "2016-02-29T12:00:00Z",
+        "source": "987654321",
+        "destination": "11123456789"
+    }
+
+    response = client.post('/calls/', call_data, format='json')
+    assert CallDetail.objects.count() == 0
+    assert response.json() == {
+        'source': 'source must be a string of 10 or 11 digits'}
+
+    call_data['source'] = "9876ABC54321"
+    response = client.post('/calls/', call_data, format='json')
+    assert CallDetail.objects.count() == 0
+    assert response.json() == {
+        'source': 'source must be a string of 10 or 11 digits'}
+
+
+@pytest.mark.django_db
+def test_post_call_detail_wrong_destination_format():
+    client = APIClient()
+
+    call_data = {
+        "id": 1,
+        "call_id": 11,
+        "type": "start",
+        "timestamp": "2016-02-29T12:00:00Z",
+        "source": "11987654321",
+        "destination": "+5511123456789"
+    }
+
+    response = client.post('/calls/', call_data, format='json')
+    assert CallDetail.objects.count() == 0
+    assert response.json() == {
+        'destination': 'destination must be a string of 10 or 11 digits'}
+
+    call_data["destination"] = "(11)12345678"
+    response = client.post('/calls/', call_data, format='json')
+    assert CallDetail.objects.count() == 0
+    assert response.json() == {
+        'destination': 'destination must be a string of 10 or 11 digits'}
+
+
+@pytest.mark.django_db
+def test_post_call_detail_end_ignore_number_format():
+    """If call type is end, source and destination are ignored even if wrong"""
+
+    client = APIClient()
+
+    call_data = {
+        "id": 1,
+        "call_id": 11,
+        "type": "end",
+        "timestamp": "2016-02-29T12:00:00Z",
+        "source": "(1)987654321",
+        "destination": "+5511123456789"
+    }
+
+    response = client.post('/calls/', call_data, format='json')
+    assert CallDetail.objects.count() == 1
+    assert response.json() == {}
