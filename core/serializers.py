@@ -3,6 +3,7 @@ import re
 
 from rest_framework import serializers
 from core.models import CallDetail
+from core.utils import get_price
 
 
 class CallDetailSerializer(serializers.BaseSerializer):
@@ -133,6 +134,8 @@ class CallDetailSerializer(serializers.BaseSerializer):
                 instance.is_completed = True
                 instance.duration = (
                     instance.ended_at - instance.started_at).seconds
+
+        instance.price = get_price(instance.started_at, instance.ended_at)
 
         instance.save()
         return instance
