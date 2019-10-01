@@ -584,7 +584,7 @@ def test_get_calls_missing_subscriber():
     assert response.status_code == 400
 
     assert response.json() == {
-        'subscriber_telephone_number': 'This field is required.'}
+        'number': 'This field is required.'}
 
 
 @pytest.mark.django_db
@@ -592,15 +592,15 @@ def test_get_calls_wrong_subscriber_format():
     client = APIClient()
 
     params = {
-        'subscriber_telephone_number': "(22)1234567",
-        'reference_period': "10/2011"
+        'number': "(22)1234567",
+        'period': "10/2011"
     }
     response = client.get('/calls/', params, format="json")
     assert response.status_code == 400
 
     assert response.json() == {
-        'subscriber_telephone_number':
-            'subscriber_telephone_number must be a string of 10 or 11 digits'}
+        'number':
+            'number must be a string of 10 or 11 digits'}
 
 
 @pytest.mark.django_db
@@ -608,15 +608,15 @@ def test_get_calls_wrong_period_format():
     client = APIClient()
 
     params = {
-        'subscriber_telephone_number': "2212345678",
-        'reference_period': "2011-10"
+        'number': "2212345678",
+        'period': "2011-10"
     }
     response = client.get('/calls/', params, format="json")
     assert response.status_code == 400
 
     assert response.json() == {
-        'reference_period':
-            'reference_period must be in the format: "MM/YYYY"'}
+        'period':
+            'period must be in the format: "MM/YYYY"'}
 
 
 # Section: Get Telephone Bill ================================================
@@ -694,15 +694,15 @@ def test_get_calls():
     # 0h34m20s
 
     params = {
-        'subscriber_telephone_number': "2212345678",
-        'reference_period': '10/2011'
+        'number': "2212345678",
+        'period': '10/2011'
     }
     response = client.get('/calls/', params, format="json")
     assert response.status_code == 200
 
     assert response.json() == {
-        'subscriber_telephone_number': '2212345678',
-        'reference_period': '10/2011',
+        'number': '2212345678',
+        'period': '10/2011',
         'call_records': [{
             'destination': '4412345678',
             'call_start_date': '2011-10-13',
@@ -719,14 +719,14 @@ def test_get_calls():
     }
 
     params = {
-        'subscriber_telephone_number': "2212345678"
+        'number': "2212345678"
     }
     response = client.get('/calls/', params, format="json")
     assert response.status_code == 200
 
     assert response.json() == {
-        'subscriber_telephone_number': '2212345678',
-        'reference_period': '11/2011',
+        'number': '2212345678',
+        'period': '11/2011',
         'call_records': [{
             'destination': '3312345678',
             'call_start_date': '2011-11-13',
