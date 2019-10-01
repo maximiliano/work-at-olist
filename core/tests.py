@@ -553,6 +553,48 @@ def test_get_price():
     assert get_price(start_date, end_date) == 1116
 
 
+# Section: Validate Get Telephone Bill Params ================================
+
+@pytest.mark.django_db
+def test_get_calls_missing_subscriber():
+    client = APIClient()
+
+    response = client.get('/calls/', {}, format="json")
+
+    assert response.json() == {
+        'subscriber_telephone_number': 'This field is required.'}
+
+
+@pytest.mark.django_db
+def test_get_calls_wrong_subscriber_format():
+    client = APIClient()
+
+    params = {
+        'subscriber_telephone_number': "(22)1234567",
+        'reference_period': "10/2011"
+    }
+    response = client.get('/calls/', params, format="json")
+
+    assert response.json() == {
+        'subscriber_telephone_number':
+            'subscriber_telephone_number must be a string of 10 or 11 digits'}
+
+
+@pytest.mark.django_db
+def test_get_calls_wrong_period_format():
+    client = APIClient()
+
+    params = {
+        'subscriber_telephone_number': "2212345678",
+        'reference_period': "2011-10"
+    }
+    response = client.get('/calls/', params, format="json")
+
+    assert response.json() == {
+        'reference_period':
+            'reference_period must be in the format: "MM/YYYY"'}
+
+
 # Section: Get Telephone Bill ================================================
 
 def test_format_duration():

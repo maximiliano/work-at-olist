@@ -1,4 +1,7 @@
 from datetime import datetime, timedelta
+import re
+
+from django.utils.datastructures import MultiValueDictKeyError
 
 from rest_framework import status
 from rest_framework.decorators import api_view
@@ -15,12 +18,29 @@ def calls(request):
     """
 
     if request.method == 'GET':
-        number = request.query_params['subscriber_telephone_number']
-        reference_period = request.query_params.get('reference_period')
+        try:
+            number = request.query_params['subscriber_telephone_number']
+        except MultiValueDictKeyError:
+            error = {'subscriber_telephone_number': 'This field is required.'}
+            return Response(error, status=status.HTTP_400_BAD_REQUEST)
 
+        reference_period = request.query_params.get('reference_period')
         if not reference_period:
             last_month = (datetime.now().replace(day=1) - timedelta(days=1))
             reference_period = last_month.strftime("%m/%Y")
+
+        if not re.match("^\d{10}$|^\d{11}$", number):
+            return Response({
+                'subscriber_telephone_number':
+                    ('subscriber_telephone_number '
+                     'must be a string of 10 or 11 digits')},
+                status=status.HTTP_400_BAD_REQUEST)
+
+        if not re.match("^\d{2}/\d{4}$", reference_period):
+            return Response({
+                'reference_period':
+                    'reference_period must be in the format: "MM/YYYY"'
+            }, status=status.HTTP_400_BAD_REQUEST)
 
         calls = CallDetail.objects.filter(
             source=number
