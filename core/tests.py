@@ -22,8 +22,9 @@ def test_post_call_detail_start():
         "destination": "11123456789"
     }
 
-    client.post('/calls/', call_data, format='json')
+    response = client.post('/calls/', call_data, format='json')
     assert CallDetail.objects.count() == 1
+    assert response.status_code == 204
 
     call = CallDetail.objects.get(call_id=11)
     assert call.source == "11987654321"
@@ -50,8 +51,9 @@ def test_post_call_detail_end():
         "timestamp": "2016-02-29T12:00:00Z",
     }
 
-    client.post('/calls/', call_data, format='json')
+    response = client.post('/calls/', call_data, format='json')
     assert CallDetail.objects.count() == 1
+    assert response.status_code == 204
 
     call = CallDetail.objects.get(call_id=11)
     assert call.source == None
@@ -98,7 +100,8 @@ def test_post_call_end_after_start():
         "timestamp": "2019-09-30T08:40:00Z"
     }
 
-    client.post('/calls/', call_data, format='json')
+    response = client.post('/calls/', call_data, format='json')
+    assert response.status_code == 204
     assert CallDetail.objects.count() == 1
 
     call = CallDetail.objects.get(call_id=123)
@@ -150,7 +153,8 @@ def test_post_call_start_after_end():
         "destination": "1187654321"
     }
 
-    client.post('/calls/', call_data, format='json')
+    response = client.post('/calls/', call_data, format='json')
+    assert response.status_code == 204
     assert CallDetail.objects.count() == 1
 
     call = CallDetail.objects.get(call_id=123)
@@ -185,6 +189,7 @@ def test_post_call_detail_missing_call_id():
     response = client.post('/calls/', call_data, format='json')
     assert CallDetail.objects.count() == 0
     assert response.json() == {'call_id': 'This field is required.'}
+    assert response.status_code == 400
 
 
 @pytest.mark.django_db
@@ -203,6 +208,7 @@ def test_post_call_detail_missing_type():
     response = client.post('/calls/', call_data, format='json')
     assert CallDetail.objects.count() == 0
     assert response.json() == {'type': 'This field is required.'}
+    assert response.status_code == 400
 
 
 @pytest.mark.django_db
@@ -221,6 +227,7 @@ def test_post_call_detail_missing_timestamp():
     response = client.post('/calls/', call_data, format='json')
     assert CallDetail.objects.count() == 0
     assert response.json() == {'timestamp': 'This field is required.'}
+    assert response.status_code == 400
 
 
 @pytest.mark.django_db
@@ -240,6 +247,7 @@ def test_post_call_detail_missing_source():
     assert CallDetail.objects.count() == 0
     assert response.json() == {
         'source': 'This field is required if call type is start.'}
+    assert response.status_code == 400
 
 
 @pytest.mark.django_db
@@ -259,6 +267,7 @@ def test_post_call_detail_missing_destination():
     assert CallDetail.objects.count() == 0
     assert response.json() == {
         'destination': 'This field is required if call type is start.'}
+    assert response.status_code == 400
 
 
 @pytest.mark.django_db
@@ -277,6 +286,7 @@ def test_post_call_detail_wrong_call_id_type():
     response = client.post('/calls/', call_data, format='json')
     assert CallDetail.objects.count() == 0
     assert response.json() == {'call_id': 'call_id must be an integer'}
+    assert response.status_code == 400
 
 
 @pytest.mark.django_db
@@ -295,6 +305,7 @@ def test_post_call_detail_wrong_timestamp_type():
     response = client.post('/calls/', call_data, format='json')
     assert CallDetail.objects.count() == 0
     assert response.json() == {'timestamp': 'timestamp must be a string'}
+    assert response.status_code == 400
 
 
 @pytest.mark.django_db
@@ -313,6 +324,7 @@ def test_post_call_detail_wrong_source_type():
     response = client.post('/calls/', call_data, format='json')
     assert CallDetail.objects.count() == 0
     assert response.json() == {'source': 'source must be a string'}
+    assert response.status_code == 400
 
 
 @pytest.mark.django_db
@@ -331,6 +343,7 @@ def test_post_call_detail_wrong_destination_type():
     response = client.post('/calls/', call_data, format='json')
     assert CallDetail.objects.count() == 0
     assert response.json() == {'destination': 'destination must be a string'}
+    assert response.status_code == 400
 
 
 @pytest.mark.django_db
@@ -350,6 +363,7 @@ def test_post_call_detail_wrong_type_format():
     assert CallDetail.objects.count() == 0
     assert response.json() == {
         'type': 'type must be a string with value "start" or "end".'}
+    assert response.status_code == 400
 
 
 @pytest.mark.django_db
@@ -369,6 +383,7 @@ def test_post_call_detail_wrong_timestamp_format():
     assert CallDetail.objects.count() == 0
     assert response.json() == {
         'timestamp': 'timestamp must be in the format: "YYYY-MM-DDThh:mm:ssZ"'}
+    assert response.status_code == 400
 
 
 @pytest.mark.django_db
@@ -388,12 +403,14 @@ def test_post_call_detail_wrong_source_format():
     assert CallDetail.objects.count() == 0
     assert response.json() == {
         'source': 'source must be a string of 10 or 11 digits'}
+    assert response.status_code == 400
 
     call_data['source'] = "9876ABC54321"
     response = client.post('/calls/', call_data, format='json')
     assert CallDetail.objects.count() == 0
     assert response.json() == {
         'source': 'source must be a string of 10 or 11 digits'}
+    assert response.status_code == 400
 
 
 @pytest.mark.django_db
@@ -413,12 +430,14 @@ def test_post_call_detail_wrong_destination_format():
     assert CallDetail.objects.count() == 0
     assert response.json() == {
         'destination': 'destination must be a string of 10 or 11 digits'}
+    assert response.status_code == 400
 
     call_data["destination"] = "(11)12345678"
     response = client.post('/calls/', call_data, format='json')
     assert CallDetail.objects.count() == 0
     assert response.json() == {
         'destination': 'destination must be a string of 10 or 11 digits'}
+    assert response.status_code == 400
 
 
 @pytest.mark.django_db
@@ -438,7 +457,7 @@ def test_post_call_detail_end_ignore_number_format():
 
     response = client.post('/calls/', call_data, format='json')
     assert CallDetail.objects.count() == 1
-    assert response.json() == {}
+    assert response.status_code == 204
 
 
 # Section: Price Calculations ================================================
@@ -456,7 +475,8 @@ def test_post_call_detail_reduced_tariff():
         "destination": "11123456789"
     }
 
-    client.post('/calls/', call_data, format='json')
+    response = client.post('/calls/', call_data, format='json')
+    assert response.status_code == 204
 
     call_data = {
         "id": 1,
@@ -465,7 +485,8 @@ def test_post_call_detail_reduced_tariff():
         "timestamp": "2016-02-29T05:40:00Z",
     }
 
-    client.post('/calls/', call_data, format='json')
+    response = client.post('/calls/', call_data, format='json')
+    assert response.status_code == 204
 
     assert CallDetail.objects.count() == 1
 
@@ -560,6 +581,7 @@ def test_get_calls_missing_subscriber():
     client = APIClient()
 
     response = client.get('/calls/', {}, format="json")
+    assert response.status_code == 400
 
     assert response.json() == {
         'subscriber_telephone_number': 'This field is required.'}
@@ -574,6 +596,7 @@ def test_get_calls_wrong_subscriber_format():
         'reference_period': "10/2011"
     }
     response = client.get('/calls/', params, format="json")
+    assert response.status_code == 400
 
     assert response.json() == {
         'subscriber_telephone_number':
@@ -589,6 +612,7 @@ def test_get_calls_wrong_period_format():
         'reference_period': "2011-10"
     }
     response = client.get('/calls/', params, format="json")
+    assert response.status_code == 400
 
     assert response.json() == {
         'reference_period':
@@ -674,6 +698,7 @@ def test_get_calls():
         'reference_period': '10/2011'
     }
     response = client.get('/calls/', params, format="json")
+    assert response.status_code == 200
 
     assert response.json() == {
         'subscriber_telephone_number': '2212345678',
@@ -697,6 +722,7 @@ def test_get_calls():
         'subscriber_telephone_number': "2212345678"
     }
     response = client.get('/calls/', params, format="json")
+    assert response.status_code == 200
 
     assert response.json() == {
         'subscriber_telephone_number': '2212345678',

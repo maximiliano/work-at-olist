@@ -50,11 +50,13 @@ def calls(request):
             is_completed=True).order_by('started_at')
 
         serializer = CallDetailSerializer(calls, many=True)
-        return Response({
-            'subscriber_telephone_number': number,
-            'reference_period': reference_period,
-            'call_records': serializer.data
-        })
+        return Response(
+            {
+                'subscriber_telephone_number': number,
+                'reference_period': reference_period,
+                'call_records': serializer.data
+            },
+            status=status.HTTP_200_OK)
 
     if request.method == 'POST':
         try:
@@ -65,5 +67,5 @@ def calls(request):
 
         if serializer.is_valid():
             serializer.save()
-            return Response({}, status=status.HTTP_201_CREATED)
+            return Response({}, status=status.HTTP_204_NO_CONTENT)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
