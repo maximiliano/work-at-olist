@@ -3,7 +3,7 @@ import re
 
 from rest_framework import serializers
 from core.models import CallDetail
-from core.utils import get_price
+from core.utils import get_price, format_duration
 
 
 class CallDetailSerializer(serializers.BaseSerializer):
@@ -106,7 +106,13 @@ class CallDetailSerializer(serializers.BaseSerializer):
         return validated_data
 
     def to_representation(self, obj):
-        return {}
+        return {
+            'destination': obj.destination,
+            'call_start_date': obj.started_at.strftime('%Y-%m-%d'),
+            'call_start_time': obj.started_at.strftime('%H:%M:%S'),
+            'call_duration': format_duration(obj.duration),
+            'call_price': 'R$ {:.2f}'.format(obj.price / 100).replace('.', ',')
+        }
 
     def create(self, validated_data):
         return CallDetail.objects.create(**validated_data)

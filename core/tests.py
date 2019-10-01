@@ -553,6 +553,8 @@ def test_get_price():
     assert get_price(start_date, end_date) == 1116
 
 
+# Section: Get Telephone Bill ================================================
+
 def test_format_duration():
     assert format_duration(0) == "0h0m0s"
     assert format_duration(30) == "0h0m30s"
@@ -560,3 +562,108 @@ def test_format_duration():
     assert format_duration(85) == "0h1m25s"
     assert format_duration(600) == "0h10m0s"
     assert format_duration(9200) == "2h33m20s"
+
+
+@pytest.mark.django_db
+@pytest.mark.freeze_time('2011-12-13')
+def test_get_calls():
+    client = APIClient()
+
+    # Subscriber A: 2212345678
+    # Subscriber B: 3312345678
+    # Subscriber C: 4412345678
+    # Subscriber D: 5512345678
+
+    # A -> B
+    CallDetail.objects.create(
+        call_id=1, source="2212345678", destination="3312345678",
+        duration=1240, price=54, reference_period="10/2011",
+        started_at=datetime(2011, 10, 13, 21, 57, 13, tzinfo=timezone.utc),
+        ended_at=datetime(2011, 10, 13, 22, 17, 53, tzinfo=timezone.utc),
+        is_completed=True)
+    # 0h20m40s
+
+    # A -> B (not completed call)
+    CallDetail.objects.create(
+        call_id=1, source="2212345678", destination="3312345678",
+        duration=1240, price=54, reference_period="10/2011",
+        started_at=datetime(2011, 10, 13, 21, 57, 13, tzinfo=timezone.utc),
+        ended_at=None, is_completed=False)
+    # 0h20m40s
+
+    # A -> B
+    CallDetail.objects.create(
+        call_id=2, source="2212345678", destination="3312345678",
+        duration=585, price=117, reference_period="11/2011",
+        started_at=datetime(2011, 11, 13, 8, 30, 15, tzinfo=timezone.utc),
+        ended_at=datetime(2011, 11, 13, 8, 40, 0, tzinfo=timezone.utc),
+        is_completed=True)
+    # 0h9m45s
+
+    # B -> A
+    CallDetail.objects.create(
+        call_id=2, source="3312345678", destination="2212345678",
+        duration=585, price=117, reference_period="11/2011",
+        started_at=datetime(2011, 11, 13, 9, 30, 15, tzinfo=timezone.utc),
+        ended_at=datetime(2011, 11, 13, 9, 40, 0, tzinfo=timezone.utc),
+        is_completed=True)
+    # 0h9m45s
+
+    # A -> C
+    CallDetail.objects.create(
+        call_id=3, source="2212345678", destination="4412345678",
+        duration=59400, price=8676, reference_period="10/2011",
+        started_at=datetime(2011, 10, 13, 5, 50, 0, tzinfo=timezone.utc),
+        ended_at=datetime(2011, 10, 13, 22, 20, 0, tzinfo=timezone.utc),
+        is_completed=True)
+    # 16h30m0s
+
+    # C -> D
+    CallDetail.objects.create(
+        call_id=4, source="4412345678", destination="5512345678",
+        duration=2060, price=343, reference_period="10/2011",
+        started_at=datetime(2011, 10, 13, 11, 50, 0, tzinfo=timezone.utc),
+        ended_at=datetime(2011, 10, 13, 12, 24, 20, tzinfo=timezone.utc),
+        is_completed=True)
+    # 0h34m20s
+
+    params = {
+        'subscriber_telephone_number': "2212345678",
+        'reference_period': '10/2011'
+    }
+    response = client.get('/calls/', params, format="json")
+
+    assert response.json() == {
+        'subscriber_telephone_number': '2212345678',
+        'reference_period': '10/2011',
+        'call_records': [{
+            'destination': '4412345678',
+            'call_start_date': '2011-10-13',
+            'call_start_time': '05:50:00',
+            'call_duration': '16h30m0s',
+            'call_price': 'R$ 86,76'
+        }, {
+            'destination': '3312345678',
+            'call_start_date': '2011-10-13',
+            'call_start_time': '21:57:13',
+            'call_duration': '0h20m40s',
+            'call_price': 'R$ 0,54'
+        }]
+    }
+
+    params = {
+        'subscriber_telephone_number': "2212345678"
+    }
+    response = client.get('/calls/', params, format="json")
+
+    assert response.json() == {
+        'subscriber_telephone_number': '2212345678',
+        'reference_period': '11/2011',
+        'call_records': [{
+            'destination': '3312345678',
+            'call_start_date': '2011-11-13',
+            'call_start_time': '08:30:15',
+            'call_duration': '0h9m45s',
+            'call_price': 'R$ 1,17'
+        }]
+    }
