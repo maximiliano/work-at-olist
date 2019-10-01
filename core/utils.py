@@ -1,3 +1,11 @@
+def format_duration(duration_in_seconds):
+    hours = duration_in_seconds // 3600
+    minutes = (duration_in_seconds // 60) % 60
+    seconds = duration_in_seconds % 60
+
+    return "{}h{}m{}s".format(hours, minutes, seconds)
+
+
 def get_price(start_date, end_date):
     """
     Calculate price of a call based on start and end times

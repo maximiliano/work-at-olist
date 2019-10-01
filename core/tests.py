@@ -4,7 +4,7 @@ import pytest
 from rest_framework.test import APIClient
 
 from core.models import CallDetail
-from core.utils import get_price
+from core.utils import format_duration, get_price
 
 
 @pytest.mark.django_db
@@ -551,3 +551,12 @@ def test_get_price():
     end_date = datetime(2011, 12, 14, 7, 0, 0, tzinfo=timezone.utc)
     # 120 minutes * R$ 0,09 + 0,36
     assert get_price(start_date, end_date) == 1116
+
+
+def test_format_duration():
+    assert format_duration(0) == "0h0m0s"
+    assert format_duration(30) == "0h0m30s"
+    assert format_duration(60) == "0h1m0s"
+    assert format_duration(85) == "0h1m25s"
+    assert format_duration(600) == "0h10m0s"
+    assert format_duration(9200) == "2h33m20s"
