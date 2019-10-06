@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 import re
 
 from django.utils.datastructures import MultiValueDictKeyError
@@ -39,6 +39,14 @@ def calls(request):
         if not re.match("^\d{2}/\d{4}$", period):
             return Response({
                 'period': 'period must be in the format: "MM/YYYY"'
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        # Validate if period is a closed period (previous month)
+        current_month = date.today().replace(day=1)
+        period_date = datetime.strptime(period, "%m/%Y").date()
+        if period_date >= current_month:
+            return Response({
+                'period': 'period must be of a closed (previous) month'
             }, status=status.HTTP_400_BAD_REQUEST)
 
         calls = CallDetail.objects.filter(

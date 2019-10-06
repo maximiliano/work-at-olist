@@ -619,6 +619,27 @@ def test_get_calls_wrong_period_format():
             'period must be in the format: "MM/YYYY"'}
 
 
+@pytest.mark.django_db
+@pytest.mark.freeze_time('2011-12-13')
+def test_get_calls_wrong_closed_period():
+    client = APIClient()
+
+    params = {
+        'number': "2212345678",
+        'period': "12/2011"
+    }
+    expected = {'period': 'period must be of a closed (previous) month'}
+
+    response = client.get('/calls/', params, format="json")
+    assert response.status_code == 400
+    assert response.json() == expected
+
+    params['period'] = "03/2012"
+    response = client.get('/calls/', params, format="json")
+    assert response.status_code == 400
+    assert response.json() == expected
+
+
 # Section: Get Telephone Bill ================================================
 
 def test_format_duration():
