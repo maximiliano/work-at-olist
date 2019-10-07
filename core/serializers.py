@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import date, datetime, timedelta, timezone
 import re
 
 from rest_framework import serializers
@@ -106,13 +106,7 @@ class CallDetailSerializer(serializers.BaseSerializer):
         return validated_data
 
     def to_representation(self, obj):
-        return {
-            'destination': obj.destination,
-            'call_start_date': obj.started_at.strftime('%Y-%m-%d'),
-            'call_start_time': obj.started_at.strftime('%H:%M:%S'),
-            'call_duration': format_duration(obj.duration),
-            'call_price': 'R$ {:.2f}'.format(obj.price / 100).replace('.', ',')
-        }
+        return {}
 
     def create(self, validated_data):
         return CallDetail.objects.create(**validated_data)
@@ -145,3 +139,61 @@ class CallDetailSerializer(serializers.BaseSerializer):
 
         instance.save()
         return instance
+
+
+class MonthlyBillSerializer(serializers.BaseSerializer):
+    def to_internal_value(self, data):
+
+        # Tries to get subscriber phone number parameter
+        number = data.get('number')
+        if not number:
+            raise serializers.ValidationError({
+                'number': 'This field is required.'
+            })
+
+        # Tries to get period parameter
+        period = data.get('period')
+        if not period:
+            # If period is empty, assign last month
+            last_month = (datetime.now().replace(day=1) - timedelta(days=1))
+            period = last_month.strftime("%m/%Y")
+
+        # Validate if subscriber phone number match corret format
+        if not re.match("^\d{10}$|^\d{11}$", number):
+            raise serializers.ValidationError({
+                'number': 'number must be a string of 10 or 11 digits'
+            })
+
+        # Validate if period match corret format
+        if not re.match("^\d{2}/\d{4}$", period):
+            raise serializers.ValidationError({
+                'period': 'period must be in the format: "MM/YYYY"'
+            })
+
+        # Validate if period is a closed period (previous month)
+        current_month = date.today().replace(day=1)
+        period_date = datetime.strptime(period, "%m/%Y").date()
+        if period_date >= current_month:
+            raise serializers.ValidationError({
+                'period': 'period must be of a closed (previous) month'
+            })
+
+        return {
+            'number': number,
+            'period': period
+        }
+
+    def to_representation(self, obj):
+        if isinstance(obj, dict):
+            return {
+                'number': obj['number'],
+                'period': obj['period']
+            }
+
+        return {
+            'destination': obj.destination,
+            'call_start_date': obj.started_at.strftime('%Y-%m-%d'),
+            'call_start_time': obj.started_at.strftime('%H:%M:%S'),
+            'call_duration': format_duration(obj.duration),
+            'call_price': 'R$ {:.2f}'.format(obj.price / 100).replace('.', ',')
+        }
