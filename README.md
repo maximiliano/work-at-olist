@@ -5,12 +5,17 @@
 - [User API Documentation](#user-api-documentation)
   - [Get telephone bill](#get-telephone-bill)
   - [Save telephone call detail records](#save-telephone-call-detail-records)
+- [App Documentation](#app-documentation)
+  - [Requirements](#requirements)
+  - [Install Instructions](#install-instructions)
+  - [Heroku Deploy](#heroku-deploy)
 
 <!-- /MarkdownTOC -->
 
 
 <a id="user-api-documentation"></a>
 ## User API Documentation
+This application can be used to save call detail records and get the bills associated with them by your convenience. It calculates monthly bills for a given telephone number.
 
 <a id="get-telephone-bill"></a>
 ### Get telephone bill
@@ -234,3 +239,72 @@ None
 - You application should check for 204 code status to verify the record was saved correctly. 
 - You MUST send the timestamp in UTC timezone, do any convertion timezone conversion needed in your end.
 
+<a id="app-documentation"></a>
+## App Documentation
+If you're a developer trying to understand better this app or modify it, use this section to learn more.
+
+This is a Python application using the Django framework and Django Rest Framework. It can be used as is or modified as you wish.
+
+<a id="requirements"></a>
+### Requirements
+- Python3
+
+<a id="install-instructions"></a>
+### Install Instructions
+Bellow you will find instructions to install and run the app locally as well as deploying in Heroku. It's convenient to use a virtual environment to install Python modules, if you're not familiar with it, read about it here: [venv — Creation of virtual environments](https://docs.python.org/3/library/venv.html).
+
+1. Enter in your workspace directory
+2. Create a virtual env directory: `$ mkdir venvs`
+3. Create the virtual env: `$ python3 -m venv python/venvs/calldetail`
+4. Activate the virtual env: `$ source venvs/calldetail/bin/activate`
+5. Clone the repository: `$ git clone https://github.com/maximiliano/work-at-olist`
+6. `$ cd work-at-olist`
+7. Install dependencies: `$ pip install -r requirements.txt`
+8. Configure your database:
+  - If you're going to use sqlite you can just run the migrations:  `$ python manage.py migrate`
+  - Else, you will need a few extra steps:
+  - Create the data base in your choosen database: `> CREATE DATABASE calldetails;` (or another name you choose)
+  - Assign these enviroment variables, either via export command or or adding them to your shell initialization file:
+  - `$ export CD_DB_ENGINE=<your engine, like mysql or postgres>`
+  - `$ export CD_DB_NAME=calldetails`
+  - `$ export CD_DB_USER=<your db user>`
+  - `$ export CD_DB_PASSWORD=<your user password>`
+  - `$ export CD_DB_HOST=<localhost or other host>`
+  - `$ export CD_DB_PORT=<your db port>`
+  - To know more about django database configuration see this: [Dabatase Settings](https://docs.djangoproject.com/en/2.2/ref/settings/#databases)
+  - Run migrations: `$ python manage.py migrate`
+9. Run the local server to test: `$ python manage.py runserver`
+10. If you see the message "Starting development server at http://127.0.0.1:8000/" means everything is working!
+
+
+#### Debug Mode
+
+If you want to see the app in DEBUG mode you have to assign the `CD_DEBUG` enviroment variable to `true`: `$ export CD_DEBUG=true` (Don't need to put quotes, it still is a string value).
+
+Run the export command before running the server or add it to your shell initialization file, commonly named `~/.bash_profile`, `~/.profile` or `~/.bashrc`.
+
+#### Testing
+You can run the test suit with the command: `$ python -m pytest -vv`
+
+<a id="heroku-deploy"></a>
+### Heroku Deploy
+
+If you want to deploy in Heroku, the app is all set up, you just need to run a few commands.
+
+1. Log in your Heroku account: `$ heroku login`
+2. Create your Heroku application: `$ heroku create`
+3. Disable uneeded stuff: `$ heroku config:set DISABLE_COLLECTSTATIC=1`
+4. Make sure you have only one dyno running: `$ heroku ps:scale web=1`
+6. Send your code to heroku: `$ git push heroku master`
+5. Run the migrations in Heroku, it will run in a PostgreSQL database, everything is already set up: `$ heroku run python manage.py migrate`
+6. All done! Your app is running in Heroku
+
+#### Debug Mode
+
+If you want to see the app in DEBUG mode you have to assign the `CD_DEBUG` enviroment variable to `true`: `$ heroku config:set CD_DEBUG=true` (Don't need to put quotes, it still is a string value).
+
+#### Checking Logs
+
+You can check logs of running app with the commmand: `$ heroku logs --tail`
+
+If the heroku deploy isn't working, refer to Heroku Docs on Python to learn more: [Getting Started on Heroku with Python](https://devcenter.heroku.com/articles/getting-started-with-python) and [Deploying Python and Django Apps on Heroku](https://devcenter.heroku.com/articles/deploying-python).
