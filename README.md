@@ -111,6 +111,9 @@ None
 **Code:** 400 BAD REQUEST <br />
 **Content:** `{"period": "period must be in the format: MM/YYYY"}`
 
+**Code:** 400 BAD REQUEST <br />
+**Content:** `{"period": "period must be of a closed (previous) month"}`
+
 <a id="notes"></a>
 #### Notes
 
