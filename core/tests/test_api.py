@@ -284,7 +284,7 @@ def test_post_call_detail_wrong_call_id_type():
 
     response = client.post('/calls/', call_data, format='json')
     assert CallDetail.objects.count() == 0
-    assert response.json() == {'call_id': 'call_id must be an integer'}
+    assert response.json() == {'call_id': 'call_id must be an integer.'}
     assert response.status_code == 400
 
 
@@ -303,7 +303,7 @@ def test_post_call_detail_wrong_timestamp_type():
 
     response = client.post('/calls/', call_data, format='json')
     assert CallDetail.objects.count() == 0
-    assert response.json() == {'timestamp': 'timestamp must be a string'}
+    assert response.json() == {'timestamp': 'timestamp must be a string.'}
     assert response.status_code == 400
 
 
@@ -322,7 +322,7 @@ def test_post_call_detail_wrong_source_type():
 
     response = client.post('/calls/', call_data, format='json')
     assert CallDetail.objects.count() == 0
-    assert response.json() == {'source': 'source must be a string'}
+    assert response.json() == {'source': 'source must be a string.'}
     assert response.status_code == 400
 
 
@@ -341,7 +341,7 @@ def test_post_call_detail_wrong_destination_type():
 
     response = client.post('/calls/', call_data, format='json')
     assert CallDetail.objects.count() == 0
-    assert response.json() == {'destination': 'destination must be a string'}
+    assert response.json() == {'destination': 'destination must be a string.'}
     assert response.status_code == 400
 
 
@@ -401,14 +401,14 @@ def test_post_call_detail_wrong_source_format():
     response = client.post('/calls/', call_data, format='json')
     assert CallDetail.objects.count() == 0
     assert response.json() == {
-        'source': 'source must be a string of 10 or 11 digits'}
+        'source': 'source must be a string of 10 or 11 digits.'}
     assert response.status_code == 400
 
     call_data['source'] = "9876ABC54321"
     response = client.post('/calls/', call_data, format='json')
     assert CallDetail.objects.count() == 0
     assert response.json() == {
-        'source': 'source must be a string of 10 or 11 digits'}
+        'source': 'source must be a string of 10 or 11 digits.'}
     assert response.status_code == 400
 
 
@@ -428,14 +428,14 @@ def test_post_call_detail_wrong_destination_format():
     response = client.post('/calls/', call_data, format='json')
     assert CallDetail.objects.count() == 0
     assert response.json() == {
-        'destination': 'destination must be a string of 10 or 11 digits'}
+        'destination': 'destination must be a string of 10 or 11 digits.'}
     assert response.status_code == 400
 
     call_data["destination"] = "(11)12345678"
     response = client.post('/calls/', call_data, format='json')
     assert CallDetail.objects.count() == 0
     assert response.json() == {
-        'destination': 'destination must be a string of 10 or 11 digits'}
+        'destination': 'destination must be a string of 10 or 11 digits.'}
     assert response.status_code == 400
 
 
@@ -528,7 +528,7 @@ def test_get_calls_wrong_subscriber_format():
 
     assert response.json() == {
         'number':
-            'number must be a string of 10 or 11 digits'}
+            'number must be a string of 10 or 11 digits.'}
 
 
 @pytest.mark.django_db
@@ -556,7 +556,7 @@ def test_get_calls_wrong_closed_period():
         'number': "2212345678",
         'period': "12/2011"
     }
-    expected = {'period': 'period must be of a closed (previous) month'}
+    expected = {'period': 'period must be of a closed (previous) month.'}
 
     response = client.get('/calls/', params, format="json")
     assert response.status_code == 400

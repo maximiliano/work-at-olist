@@ -106,13 +106,13 @@ None
 **Content:** `{"number": "This field is required."}`
 
 **Code:** 400 BAD REQUEST <br />
-**Content:** `{"number": "number must be a string of 10 or 11 digits"}`
+**Content:** `{"number": "number must be a string of 10 or 11 digits."}`
 
 **Code:** 400 BAD REQUEST <br />
-**Content:** `{"period": "period must be in the format: MM/YYYY"}`
+**Content:** `{"period": "period must be in the format: MM/YYYY."}`
 
 **Code:** 400 BAD REQUEST <br />
-**Content:** `{"period": "period must be of a closed (previous) month"}`
+**Content:** `{"period": "period must be of a closed (previous) month."}`
 
 <a id="notes"></a>
 #### Notes
@@ -211,16 +211,16 @@ None
 **Content:** `{"destination": "This field is required if call type is start."}`
 
 **Code:** 400 BAD REQUEST <br />
-**Content:** `{"call_id": "call_id must be an integer"}`
+**Content:** `{"call_id": "call_id must be an integer."}`
 
 **Code:** 400 BAD REQUEST <br />
-**Content:** `{"timestamp": "timestamp must be a string"}`
+**Content:** `{"timestamp": "timestamp must be a string."}`
 
 **Code:** 400 BAD REQUEST <br />
-**Content:** `{"source": "source must be a string"}`
+**Content:** `{"source": "source must be a string."}`
 
 **Code:** 400 BAD REQUEST <br />
-**Content:** `{"destination": "destination must be a string"}`
+**Content:** `{"destination": "destination must be a string."}`
 
 **Code:** 400 BAD REQUEST <br />
 **Content:** `{"type": "type must be a string with value 'start' or 'end'."}`
@@ -232,7 +232,7 @@ None
 **Content:** `{"source": "source must be a string of 10 or 11 digits"}`
 
 **Code:** 400 BAD REQUEST <br />
-**Content:** `{"destination": "destination must be a string of 10 or 11 digits"}`
+**Content:** `{"destination": "destination must be a string of 10 or 11 digits."}`
 
 
 <a id="notes"></a>

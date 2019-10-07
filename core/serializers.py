@@ -43,23 +43,23 @@ class CallDetailSerializer(serializers.BaseSerializer):
         # Validate field types
         if not isinstance(timestamp, str):
             raise serializers.ValidationError({
-                'timestamp': 'timestamp must be a string'
+                'timestamp': 'timestamp must be a string.'
             })
 
         if not isinstance(call_id, int):
             raise serializers.ValidationError({
-                'call_id': 'call_id must be an integer'
+                'call_id': 'call_id must be an integer.'
             })
 
         if call_type == "start":
             if not isinstance(source, str):
                 raise serializers.ValidationError({
-                    'source': 'source must be a string'
+                    'source': 'source must be a string.'
                 })
 
             if not isinstance(destination, str):
                 raise serializers.ValidationError({
-                    'destination': 'destination must be a string'
+                    'destination': 'destination must be a string.'
                 })
 
         # Validate field formats
@@ -82,13 +82,13 @@ class CallDetailSerializer(serializers.BaseSerializer):
             if not re.match("^\d{10}$|^\d{11}$", source):
                 raise serializers.ValidationError({
                     'source':
-                        'source must be a string of 10 or 11 digits'
+                        'source must be a string of 10 or 11 digits.'
                 })
 
             if not re.match("^\d{10}$|^\d{11}$", destination):
                 raise serializers.ValidationError({
                     'destination':
-                        'destination must be a string of 10 or 11 digits'
+                        'destination must be a string of 10 or 11 digits.'
                 })
 
         validated_data = {
@@ -161,7 +161,7 @@ class MonthlyBillSerializer(serializers.BaseSerializer):
         # Validate if subscriber phone number match corret format
         if not re.match("^\d{10}$|^\d{11}$", number):
             raise serializers.ValidationError({
-                'number': 'number must be a string of 10 or 11 digits'
+                'number': 'number must be a string of 10 or 11 digits.'
             })
 
         # Validate if period match corret format
@@ -175,7 +175,7 @@ class MonthlyBillSerializer(serializers.BaseSerializer):
         period_date = datetime.strptime(period, "%m/%Y").date()
         if period_date >= current_month:
             raise serializers.ValidationError({
-                'period': 'period must be of a closed (previous) month'
+                'period': 'period must be of a closed (previous) month.'
             })
 
         return {
