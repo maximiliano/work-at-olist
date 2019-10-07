@@ -8,8 +8,7 @@ from core.models import CallDetail
 
 @pytest.mark.django_db
 def test_post_call_detail_start():
-    """Test simple and correct call start registering"""
-
+    """Test simple and correct call start registering."""
     client = APIClient()
 
     call_data = {
@@ -39,8 +38,7 @@ def test_post_call_detail_start():
 
 @pytest.mark.django_db
 def test_post_call_detail_end():
-    """Test simple and correct call end registering"""
-
+    """Test simple and correct call end registering."""
     client = APIClient()
 
     call_data = {
@@ -68,8 +66,7 @@ def test_post_call_detail_end():
 
 @pytest.mark.django_db
 def test_post_call_end_after_start():
-    """Test POST call end when the start was already registered"""
-
+    """Test POST call end when the start was already registered."""
     client = APIClient()
 
     # Create a previous CallDetail with Record Call Start info already present
@@ -119,8 +116,7 @@ def test_post_call_end_after_start():
 
 @pytest.mark.django_db
 def test_post_call_start_after_end():
-    """Test POST call start when the end was already registered"""
-
+    """Test POST call start when the end was already registered."""
     client = APIClient()
 
     # Create a previous CallDetail with Record Call End info already present
@@ -174,6 +170,7 @@ def test_post_call_start_after_end():
 
 @pytest.mark.django_db
 def test_post_call_detail_missing_call_id():
+    """Test if a post call misses the call_id parameter."""
     client = APIClient()
 
     call_data = {
@@ -193,6 +190,7 @@ def test_post_call_detail_missing_call_id():
 
 @pytest.mark.django_db
 def test_post_call_detail_missing_type():
+    """Test if a post call misses the type parameter."""
     client = APIClient()
 
     call_data = {
@@ -212,6 +210,7 @@ def test_post_call_detail_missing_type():
 
 @pytest.mark.django_db
 def test_post_call_detail_missing_timestamp():
+    """Test if a post call misses the timestamp parameter."""
     client = APIClient()
 
     call_data = {
@@ -231,6 +230,7 @@ def test_post_call_detail_missing_timestamp():
 
 @pytest.mark.django_db
 def test_post_call_detail_missing_source():
+    """Test if a post call misses the source parameter."""
     client = APIClient()
 
     call_data = {
@@ -251,6 +251,7 @@ def test_post_call_detail_missing_source():
 
 @pytest.mark.django_db
 def test_post_call_detail_missing_destination():
+    """Test if a post call misses the destination parameter."""
     client = APIClient()
 
     call_data = {
@@ -271,6 +272,7 @@ def test_post_call_detail_missing_destination():
 
 @pytest.mark.django_db
 def test_post_call_detail_wrong_call_id_type():
+    """Test if a post call type parameter value is invalid."""
     client = APIClient()
 
     call_data = {
@@ -290,6 +292,7 @@ def test_post_call_detail_wrong_call_id_type():
 
 @pytest.mark.django_db
 def test_post_call_detail_wrong_timestamp_type():
+    """Test if a post call timestamp parameter type is invalid."""
     client = APIClient()
 
     call_data = {
@@ -309,6 +312,7 @@ def test_post_call_detail_wrong_timestamp_type():
 
 @pytest.mark.django_db
 def test_post_call_detail_wrong_source_type():
+    """Test if a post call source parameter type is invalid."""
     client = APIClient()
 
     call_data = {
@@ -328,6 +332,7 @@ def test_post_call_detail_wrong_source_type():
 
 @pytest.mark.django_db
 def test_post_call_detail_wrong_destination_type():
+    """Test if a post call destination parameter type is invalid."""
     client = APIClient()
 
     call_data = {
@@ -347,6 +352,7 @@ def test_post_call_detail_wrong_destination_type():
 
 @pytest.mark.django_db
 def test_post_call_detail_wrong_type_format():
+    """Test if a post call type parameter format is wrong."""
     client = APIClient()
 
     call_data = {
@@ -367,6 +373,7 @@ def test_post_call_detail_wrong_type_format():
 
 @pytest.mark.django_db
 def test_post_call_detail_wrong_timestamp_format():
+    """Test if a post call timestamp parameter format is wrong."""
     client = APIClient()
 
     call_data = {
@@ -387,6 +394,7 @@ def test_post_call_detail_wrong_timestamp_format():
 
 @pytest.mark.django_db
 def test_post_call_detail_wrong_source_format():
+    """Test if a post call source parameter format is wrong."""
     client = APIClient()
 
     call_data = {
@@ -414,6 +422,7 @@ def test_post_call_detail_wrong_source_format():
 
 @pytest.mark.django_db
 def test_post_call_detail_wrong_destination_format():
+    """Test if a post call destination parameter format is wrong."""
     client = APIClient()
 
     call_data = {
@@ -441,8 +450,7 @@ def test_post_call_detail_wrong_destination_format():
 
 @pytest.mark.django_db
 def test_post_call_detail_end_ignore_number_format():
-    """If call type is end, source and destination are ignored even if wrong"""
-
+    """Test if call source and destination are ignored in Call Record End."""
     client = APIClient()
 
     call_data = {
@@ -463,6 +471,7 @@ def test_post_call_detail_end_ignore_number_format():
 
 @pytest.mark.django_db
 def test_post_call_detail_reduced_tariff():
+    """Test if price is calculated correctly in Reduced Tariff Time."""
     client = APIClient()
 
     call_data = {
@@ -505,7 +514,8 @@ def test_post_call_detail_reduced_tariff():
 # Section: Validate Get Telephone Bill Params ================================
 
 @pytest.mark.django_db
-def test_get_calls_missing_subscriber():
+def test_get_calls_missing_number():
+    """Test if GET call misses the number parameter."""
     client = APIClient()
 
     response = client.get('/calls/', {}, format="json")
@@ -516,7 +526,8 @@ def test_get_calls_missing_subscriber():
 
 
 @pytest.mark.django_db
-def test_get_calls_wrong_subscriber_format():
+def test_get_calls_wrong_number_format():
+    """Test if GET call number parameter format is wrong."""
     client = APIClient()
 
     params = {
@@ -533,6 +544,7 @@ def test_get_calls_wrong_subscriber_format():
 
 @pytest.mark.django_db
 def test_get_calls_wrong_period_format():
+    """Test if GET call period parameter format is wrong."""
     client = APIClient()
 
     params = {
@@ -550,6 +562,7 @@ def test_get_calls_wrong_period_format():
 @pytest.mark.django_db
 @pytest.mark.freeze_time('2011-12-13')
 def test_get_calls_wrong_closed_period():
+    """Test if GET call period parameter is in a invalid date."""
     client = APIClient()
 
     params = {
@@ -573,6 +586,7 @@ def test_get_calls_wrong_closed_period():
 @pytest.mark.django_db
 @pytest.mark.freeze_time('2011-12-13')
 def test_get_calls():
+    """Test if GET call returns the bills correctly"""
     client = APIClient()
 
     # Subscriber A: 2212345678

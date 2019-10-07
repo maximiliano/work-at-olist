@@ -2,6 +2,16 @@ from django.db import models
 
 
 class CallDetail(models.Model):
+    """
+    Model that holds all information about the call.
+
+    This model is formed from data coming from Start Call Records and
+    End Call Records. It is capable of holding information individually and
+    only after both records are save, it is marked as completed.
+
+    Only completed CallDetails are returned when requested by the API.
+    """
+
     # Call Id from telephone central
     call_id = models.IntegerField()
     # Phone number that started the call

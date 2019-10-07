@@ -1,4 +1,5 @@
 def format_duration(duration_in_seconds):
+    """Format the duration in human readable way"""
     hours = duration_in_seconds // 3600
     minutes = (duration_in_seconds // 60) % 60
     seconds = duration_in_seconds % 60
@@ -50,12 +51,12 @@ def get_price(start_date, end_date):
 
         billed_minutes = 0
 
-        # Day 1 minutes
+        # Calculate minutes that should be billed in day 1
         if start_date.hour >= 6 and start_date.hour < 22:
             proxy_end_date = start_date.replace(hour=22, minute=0, second=0)
             billed_minutes += (proxy_end_date - start_date).seconds // 60
 
-        # Day 2 minutes
+        # Calculate minutes that should be billed in day 2
         if end_date.hour >= 6 and end_date.hour < 22:
             proxy_start_date = start_date.replace(hour=6, minute=0, second=0)
             billed_minutes += (end_date - proxy_start_date).seconds // 60

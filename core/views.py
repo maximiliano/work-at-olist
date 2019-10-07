@@ -8,12 +8,10 @@ from core.serializers import CallDetailSerializer, MonthlyBillSerializer
 
 @api_view(['GET', 'POST'])
 def calls(request):
-    """
-    List calls by subscriber and period, or create/update a call.
-    """
+    """List calls by subscriber and period, or create/update a call."""
 
+    # Return the calls and bill of a subscriber phone number for a period
     if request.method == 'GET':
-        # BillRequestSerializer
         serializer = MonthlyBillSerializer(data=request.query_params)
 
         if not serializer.is_valid():
@@ -38,6 +36,7 @@ def calls(request):
             },
             status=status.HTTP_200_OK)
 
+    # Save a call detail from a Start Call Record or End Call Record
     if request.method == 'POST':
         try:
             call = CallDetail.objects.get(call_id=request.data.get('call_id'))
