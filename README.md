@@ -327,6 +327,7 @@ If the heroku deploy isn't working, refer to Heroku Docs on Python to learn more
   + MacBook Air (13-inch, Early 2014)
   + Processor: 1,4 GHz Intel Core i5
   + Memory: 4 GB 1600 MHz DDR3
+  + Storage: 120 GB SSD
 - Operating System
   + macOS Mojave
   + Version: 10.14.6
