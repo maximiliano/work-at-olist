@@ -234,6 +234,11 @@ None
 **Code:** 400 BAD REQUEST <br />
 **Content:** `{"destination": "destination must be a string of 10 or 11 digits."}`
 
+**Code:** 400 BAD REQUEST <br />
+**Content:** `{"timestamp": "Start Record Call timestamp cannot be after End Record Call timestamp."}`
+
+**Code:** 400 BAD REQUEST <br />
+**Content:** `{"timestamp": "End Record Call timestamp cannot be before Start Record Call timestamp."}`
 
 <a id="notes"></a>
 #### Notes

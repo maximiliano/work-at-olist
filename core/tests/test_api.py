@@ -166,6 +166,78 @@ def test_post_call_start_after_end():
     assert call.is_completed == True
 
 
+@pytest.mark.django_db
+def test_post_call_end_timestamp_before_start():
+    """Test POST call when end timestamp is before start date."""
+    client = APIClient()
+
+    # Create a previous CallDetail with Record Call Start info already present
+    CallDetail.objects.create(
+        call_id=123, source="11987654321", destination="1187654321",
+        started_at=datetime(2019, 9, 30, 8, 30, 15))
+
+    # Register and test new call records, with end timestamp before start date
+    call_data = {
+        "id": 1,
+        "call_id": 123,
+        "type": "end",
+        # timestamp is 5 minutes earlier
+        "timestamp": "2019-09-30T08:25:00Z"
+    }
+
+    response = client.post('/calls/', call_data, format='json')
+    assert response.json() == {
+        'timestamp': ('End Record Call timestamp cannot be before '
+                      'Start Record Call timestamp.')}
+    assert response.status_code == 400
+
+    assert CallDetail.objects.count() == 1
+
+    call = CallDetail.objects.get(call_id=123)
+    assert call.reference_period == None
+    assert call.ended_at == None
+    assert call.duration == None
+    assert call.price == None
+    assert call.is_completed == False
+
+
+@pytest.mark.django_db
+def test_post_call_start_timestamp_after_end():
+    """Test POST call when start timestamp is after end date."""
+    client = APIClient()
+
+    # Create a previous CallDetail with Record Call End info already present
+    CallDetail.objects.create(
+        call_id=123, ended_at=datetime(2019, 9, 30, 8, 40, 0),
+        reference_period="09/2019")
+
+    # Register and test new call records, with start timestamp after end date
+    call_data = {
+        "id": 1,
+        "call_id": 123,
+        "type": "start",
+        # timestamp is 5 minutes later
+        "timestamp": "2019-09-30T08:45:00Z",
+        "source": "11987654321",
+        "destination": "1187654321"
+    }
+
+    response = client.post('/calls/', call_data, format='json')
+    assert response.json() == {
+        'timestamp': ('Start Record Call timestamp cannot be after '
+                      'End Record Call timestamp.')}
+    assert response.status_code == 400
+
+    assert CallDetail.objects.count() == 1
+
+    call = CallDetail.objects.get(call_id=123)
+    assert call.source == None
+    assert call.destination == None
+    assert call.duration == None
+    assert call.price == None
+    assert call.is_completed == False
+
+
 # Section: Validation Errors =================================================
 
 @pytest.mark.django_db

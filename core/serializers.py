@@ -95,6 +95,21 @@ class CallDetailSerializer(serializers.BaseSerializer):
             'call_id': call_id,
         }
 
+        # Check if this is an already created register to validate dates
+        if self.instance:
+            if call_type == "start" and date > self.instance.ended_at:
+                raise serializers.ValidationError({
+                    'timestamp': ('Start Record Call timestamp cannot be '
+                                  'after End Record Call timestamp.')
+                })
+
+            if call_type == "end" and date < self.instance.started_at:
+                raise serializers.ValidationError({
+                    'timestamp': ('End Record Call timestamp cannot be '
+                                  'before Start Record Call timestamp.')
+                })
+
+        # import pdb; pdb.set_trace()
         if call_type == "start":
             validated_data['source'] = source
             validated_data['destination'] = destination
