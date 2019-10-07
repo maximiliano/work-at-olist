@@ -232,3 +232,5 @@ None
 
 - Each Record Start and End must always be sent in separated requests.
 - You application should check for 204 code status to verify the record was saved correctly. 
+- You MUST send the timestamp in UTC timezone, do any convertion timezone conversion needed in your end.
+
