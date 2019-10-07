@@ -9,6 +9,7 @@
   - [Requirements](#requirements)
   - [Install Instructions](#install-instructions)
   - [Heroku Deploy](#heroku-deploy)
+  - [Work environment used](#work-environment-used)
 
 <!-- /MarkdownTOC -->
 
@@ -318,3 +319,21 @@ If you want to see the app in DEBUG mode you have to assign the `CD_DEBUG` envir
 You can check logs of running app with the commmand: `$ heroku logs --tail`
 
 If the heroku deploy isn't working, refer to Heroku Docs on Python to learn more: [Getting Started on Heroku with Python](https://devcenter.heroku.com/articles/getting-started-with-python) and [Deploying Python and Django Apps on Heroku](https://devcenter.heroku.com/articles/deploying-python).
+
+<a id="work-environment-used"></a>
+### Work environment used
+
+- Computer:
+  + MacBook Air (13-inch, Early 2014)
+  + Processor: 1,4 GHz Intel Core i5
+  + Memory: 4 GB 1600 MHz DDR3
+- Operating System
+  + macOS Mojave
+  + Version: 10.14.6
+- Software:
+  + Text Editor: Sublime Text 3 (with PEP8 linters)
+  + Terminal: iTerm
+  + Databases: sqlite3 and MySQL
+  + Libraries: Django, Django Rest Framework, Pytest, Freezegun
+  + API tests: curl, Postman
+  + Browsers: Safari and Chrome
