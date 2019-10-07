@@ -72,7 +72,7 @@ def test_post_call_end_after_start():
     # Create a previous CallDetail with Record Call Start info already present
     CallDetail.objects.create(
         call_id=123, source="11987654321", destination="1187654321",
-        started_at=datetime(2019, 9, 30, 8, 30, 15))
+        started_at=datetime(2019, 9, 30, 8, 30, 15, tzinfo=timezone.utc))
 
     old_call = CallDetail.objects.get(call_id=123)
 
@@ -121,7 +121,8 @@ def test_post_call_start_after_end():
 
     # Create a previous CallDetail with Record Call End info already present
     CallDetail.objects.create(
-        call_id=123, ended_at=datetime(2019, 9, 30, 8, 40, 0),
+        call_id=123,
+        ended_at=datetime(2019, 9, 30, 8, 40, 0, tzinfo=timezone.utc),
         reference_period="09/2019")
 
     old_call = CallDetail.objects.get(call_id=123)
@@ -174,7 +175,7 @@ def test_post_call_end_timestamp_before_start():
     # Create a previous CallDetail with Record Call Start info already present
     CallDetail.objects.create(
         call_id=123, source="11987654321", destination="1187654321",
-        started_at=datetime(2019, 9, 30, 8, 30, 15))
+        started_at=datetime(2019, 9, 30, 8, 30, 15, tzinfo=timezone.utc))
 
     # Register and test new call records, with end timestamp before start date
     call_data = {
@@ -208,7 +209,8 @@ def test_post_call_start_timestamp_after_end():
 
     # Create a previous CallDetail with Record Call End info already present
     CallDetail.objects.create(
-        call_id=123, ended_at=datetime(2019, 9, 30, 8, 40, 0),
+        call_id=123,
+        ended_at=datetime(2019, 9, 30, 8, 40, 0, tzinfo=timezone.utc),
         reference_period="09/2019")
 
     # Register and test new call records, with start timestamp after end date
