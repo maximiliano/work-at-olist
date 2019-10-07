@@ -263,7 +263,8 @@ Bellow you will find instructions to install and run the app locally as well as 
 5. Clone the repository: `$ git clone https://github.com/maximiliano/work-at-olist`
 6. `$ cd work-at-olist`
 7. Install dependencies: `$ pip install -r requirements.txt`
-8. Configure your database:
+8. Define a secret key by assigning the `CD_SECRET_KEY` enviroment variable, either via export command or or adding them to your shell initialization file, you can generate a random string like this: ``$ export CD_SECRET_KEY=`openssl rand -base64 12` ``
+9. Configure your database:
   - If you're going to use sqlite you can just run the migrations:  `$ python manage.py migrate`
   - Else, you will need a few extra steps:
   - Create the data base in your choosen database: `> CREATE DATABASE calldetails;` (or another name you choose)
@@ -276,8 +277,8 @@ Bellow you will find instructions to install and run the app locally as well as 
   - `$ export CD_DB_PORT=<your db port>`
   - To know more about django database configuration see this: [Dabatase Settings](https://docs.djangoproject.com/en/2.2/ref/settings/#databases)
   - Run migrations: `$ python manage.py migrate`
-9. Run the local server to test: `$ python manage.py runserver`
-10. If you see the message "Starting development server at http://127.0.0.1:8000/" means everything is working!
+10. Run the local server to test: `$ python manage.py runserver`
+11. If you see the message "Starting development server at http://127.0.0.1:8000/" means everything is working!
 
 
 #### Debug Mode
@@ -297,10 +298,11 @@ If you want to deploy in Heroku, the app is all set up, you just need to run a f
 1. Log in your Heroku account: `$ heroku login`
 2. Create your Heroku application: `$ heroku create`
 3. Disable uneeded stuff: `$ heroku config:set DISABLE_COLLECTSTATIC=1`
-4. Make sure you have only one dyno running: `$ heroku ps:scale web=1`
+4. Define a secret key by assigning the `CD_SECRET_KEY` enviroment variable, you can generate a random string like this: ``$ heroku config:set CD_SECRET_KEY=`openssl rand -base64 12` ``
+5. Make sure you have only one dyno running: `$ heroku ps:scale web=1`
 6. Send your code to heroku: `$ git push heroku master`
-5. Run the migrations in Heroku, it will run in a PostgreSQL database, everything is already set up: `$ heroku run python manage.py migrate`
-6. All done! Your app is running in Heroku
+7. Run the migrations in Heroku, it will run in a PostgreSQL database, everything is already set up: `$ heroku run python manage.py migrate`
+8. All done! Your app is running in Heroku
 
 #### Debug Mode
 

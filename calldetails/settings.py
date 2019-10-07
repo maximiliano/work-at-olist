@@ -11,7 +11,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'j-pf=mocvmnwk1rq0u4fv1kd==%_%m7%m(hxg6nkx7khoh#%=o'
+SECRET_KEY = os.environ['CD_SECRET_KEY']
 
 # By default debug is turned off, unless defined in environment variable.
 # WARNING: Don't turn on in Production!
