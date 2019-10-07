@@ -65,12 +65,25 @@ WSGI_APPLICATION = 'calldetails.wsgi.application'
 
 
 # Database
+db_engine = os.environ.get('CD_DB_ENGINE')
 
-DATABASES = {
-    'default': {
+if not db_engine or (db_engine == 'sqlite3'):
+    db_config = {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
+else:
+    db_config = {
+        'ENGINE': 'django.db.backends.%s' % os.environ.get('CD_DB_ENGINE'),
+        'NAME': os.environ.get('CD_DB_NAME'),
+        'USER': os.environ.get('CD_DB_USER'),
+        'PASSWORD': os.environ.get('CD_DB_PASSWORD'),
+        'HOST': os.environ.get('CD_DB_HOST'),
+        'PORT': os.environ.get('CD_DB_PORT'),
+    }
+
+DATABASES = {
+    'default': db_config
 }
 
 
@@ -110,4 +123,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 # Settings exclusive for Heroku usage
+# This will automatically configure DATABASE_URL, ALLOWED_HOSTS,
+# WhiteNoise (for static assets), Logging, and Heroku CI for your application.
+
 django_heroku.settings(locals())
